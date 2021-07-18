@@ -25,7 +25,7 @@ while true; do
     git pull
     npm ci
     node index.js &
-    PID=$?
+    PID=$!
   fi
 
 done
