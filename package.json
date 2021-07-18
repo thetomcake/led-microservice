@@ -1,0 +1,28 @@
+{
+  "name": "led-microservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-random-string": "^3.3.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-jwt": "^6.0.0",
+    "express-validator": "^6.8.0",
+    "johnny-five": "^2.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-pixel": "^0.11.0",
+    "p-queue": "^7.1.0",
+    "pino": "^6.11.0",
+    "pino-http": "^5.3.0",
+    "pino-pretty": "^4.3.0",
+    "rgb-hex": "^4.0.0"
+  }
+}
