@@ -19,7 +19,6 @@ export default new function() {
         ...rgbValidation
     ]), async (req, res) => {
         await led.on(parseInt(req.body.r), parseInt(req.body.g), parseInt(req.body.b), true);
-        req.log.info('On ' + req.body.r + ',' + req.body.g + ',' + req.body.b);
         return res.json({status: 'on'});
     });
     app.post('/off', async (req, res) => {
@@ -45,7 +44,7 @@ export default new function() {
         return res.json({status: 'wave'});
     });
 
-    app.post('/fade', validate([
+    app.post('/pulse', validate([
         // validation example - docs: https://express-validator.github.io/docs/index.html
         ...rgbValidation,
         body('speed').isNumeric().custom(number => parseInt(number) >= 500 && parseInt(number) <= 25000).optional(),

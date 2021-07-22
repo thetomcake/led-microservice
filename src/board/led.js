@@ -7,9 +7,10 @@ import PQueue from 'p-queue';
 
 export default function() {
 
+    const queueInterval = 50;
     const queue = new PQueue({
         intervalCap: 1,
-        interval: 50,
+        interval: queueInterval,
         concurrency: 1
     });
     let waveInterval;
@@ -46,12 +47,23 @@ export default function() {
         await this.reset();
         let isOn = false;
         let count =  0;
-        flashInterval = setInterval(() => {
-            isOn ? this.off() : this.on(inputR, inputG, inputB);
+        flashInterval = setInterval(async () => {
+            const strip = await stripPromise;
+            if (isOn) {
+                queue.add(() => {
+                    strip.color('#000000');
+                    strip.show();
+                });
+            } else {
+                queue.add(() => {
+                    strip.color('#' + rgbHex(inputR, inputG, inputB));
+                    strip.show();
+                });
+            }
             isOn = !isOn;
             count++;
             if ((count / 2) >= limit && limit !== -1) {
-                this.off(true);
+                this.off();
             }
         }, interval);
 
@@ -75,7 +87,6 @@ export default function() {
             ));
         }
         colorList = [...colorList.reverse(), ...colorList.reverse()];
-        console.log(colorList);
         let offset = 0;
         const strip = await stripPromise;
         fadeInterval = setInterval(() => {
@@ -121,10 +132,8 @@ export default function() {
         return Promise.resolve()
     }
 
-    this.off = async function(reset = false) {
-        if (reset) {
-            await this.reset();
-        }
+    this.off = async function() {
+        await this.reset();
         const strip = await stripPromise;
         return queue.add(() => {
             strip.color('#000000');
@@ -133,19 +142,21 @@ export default function() {
     }
 
     this.reset = async function() {
-        queue.clear();
-        if (waveInterval !== null) {
-            clearInterval(waveInterval);
-        }
-        if (fadeInterval !== null) {
-            clearInterval(fadeInterval);
-        }
-        if (flashInterval !== null) {
-            clearInterval(flashInterval);
-        }
-        return new Promise(accept => {
-            setInterval(() => accept(), 50);
-        });
+        return new Promise((accept, reject) => {
+            if (waveInterval !== null) {
+                clearInterval(waveInterval);
+            }
+            if (fadeInterval !== null) {
+                clearInterval(fadeInterval);
+            }
+            if (flashInterval !== null) {
+                clearInterval(flashInterval);
+            }
+
+            setInterval(() => {
+                queue.onEmpty().then(() => accept());
+            }, 110);
+        })
     }
 
     this.off();
